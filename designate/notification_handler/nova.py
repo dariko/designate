@@ -84,7 +84,7 @@ class BaseEnhancedHandler(NotificationHandler):
             LOG.warn('The record: %s was already registered', host_fqdn)
         else:
             record_values = dict(managed, data=interface['address'])
-            LOG.error('Creating record in %s / %s with values %r', zone['id'], recordset['id'], record_values)
+            LOG.info('Creating record in %s / %s with values %r', zone['id'], recordset['id'], record_values)
             self.central_api.create_record(context,
                                            zone['id'],
                                            recordset['id'],
@@ -140,7 +140,7 @@ class BaseEnhancedHandler(NotificationHandler):
     def _delete_records(self, context, managed):
         records = self.central_api.find_records(context, managed)
         LOG.debug(self.central_api.find_records(context, managed))
-        LOG.debug([x for x in self.central_api.find_records(context)])
+        LOG.debug([repr(x) for x in self.central_api.find_records(context)])
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
