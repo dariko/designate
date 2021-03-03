@@ -88,8 +88,9 @@ class NotificationHandler(ExtensionPlugin):
                 'name': name,
                 'type': type,
             })
-            for record in records:
-                recordset.records.append(record)
+            # for record in records:
+                # recordset.records.append(record)
+            recordset.records = records
             recordset = self.central_api.update_recordset(
                 context, recordset
             )
