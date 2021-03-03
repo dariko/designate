@@ -74,7 +74,7 @@ class BaseEnhancedHandler(NotificationHandler):
         return "%s." % hostname
 
     def _create_or_update_recordset(self, context, records, zone_id, name,
-                                    type, ttl=None):
+                                    type, ttl=None, replace=True):
         name = name.encode('idna').decode('utf-8')
 
         try:
@@ -96,11 +96,10 @@ class BaseEnhancedHandler(NotificationHandler):
                 'name': name,
                 'type': type,
             })
-            # for record in records:
-                # recordset.records.append(record)
-            LOG.error('aaaa %s', dir(recordset.records))
-            LOG.error('aaaa %s', recordset.records.__class__)
-            recordset.records = records
+            if replace:
+                recordset.records = RecordList.from_list([])
+            for record in records:
+                recordset.records.append(record)
             recordset = self.central_api.update_recordset(
                 context, recordset
             )
