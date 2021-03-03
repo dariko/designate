@@ -102,15 +102,19 @@ class BaseEnhancedHandler(NotificationHandler):
                                                               reverse_zone.id,
                                                               RecordSet(name=host_reverse_fqdn, type='PTR'))
             except exceptions.DuplicateRecordSet:
-                LOG.warn('The reverse record: %s was already registered', host_reverse_fqdn)
-            else:
-                record_values = dict(managed, data=host_fqdn)
-                LOG.debug('Creating reverse record in %s / %s with values %r',
-                          reverse_zone.id, recordset['id'], record_values)
-                self.central_api.create_record(admin_context,
-                                               reverse_zone.id,
-                                               recordset['id'],
-                                               Record(**record_values))
+                LOG.warn('The reverse record: %s was already registered, '
+                         'deleting it', host_reverse_fqdn)
+                old_reverse = self.central_api.find_recordset(
+                    admin_context, {'type': 'PTR', 'name': host_reverse_fqdn}
+                self.central_api.delete_recordset(
+                    admin_context, reverse_zone.id, old_reverse.id)
+            record_values = dict(managed, data=host_fqdn)
+            LOG.debug('Creating reverse record in %s / %s with values %r',
+                      reverse_zone.id, recordset['id'], record_values)
+            self.central_api.create_record(admin_context,
+                                           reverse_zone.id,
+                                           recordset['id'],
+                                           Record(**record_values))
 
     def _create_records(self, context, managed, payload):
         try:
