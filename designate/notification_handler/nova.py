@@ -24,7 +24,6 @@ from designate.objects import Record
 from designate.objects import RecordSet
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.DEBUG)
 
 class BaseEnhancedHandler(NotificationHandler):
     """Base Enhanced Handler"""
