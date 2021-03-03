@@ -139,7 +139,7 @@ class BaseEnhancedHandler(NotificationHandler):
     def _delete_records(self, all_tenants_context, managed, payload):
         managed_records = self.central_api.find_records(all_tenants_context, managed)
         ptr_records = self.central_api.find_records(all_tenants_context, 
-            {'data', '%s.' % payload['hostname']})
+            {'data': '%s.' % payload['hostname']})
         LOG.error('ptr_records: %s' % [x.name for x in ptr_records])
         records = managed_records
         if len(records) == 0:
