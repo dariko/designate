@@ -181,11 +181,11 @@ class BaseEnhancedHandler(NotificationHandler):
                                     ipv6_interfaces[0])
 
     def _delete_records(self, all_tenants_context, managed, payload):
-        managed_records = self.central_api.find_records(all_tenants_context, managed)
-        ptr_records = self.central_api.find_records(all_tenants_context, 
-            {'data': '%s.' % payload['hostname']})
-        LOG.error('ptr_records: %s' % [x.data for x in ptr_records])
-        records = managed_records
+        records = list(self.central_api.find_records(all_tenants_context, managed))
+        for ptr_record in self.central_api.find_records(all_tenants_context, 
+                {'data': '%s.' % payload['hostname']})
+            if not ptr_record.id in [x.id for x in records]:
+                records.append(ptr_record)
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
