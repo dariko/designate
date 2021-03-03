@@ -75,19 +75,22 @@ class BaseEnhancedHandler(NotificationHandler):
     def _create_record(self, context, managed, zone, host_fqdn, interface):
         LOG.info('Create record for host: %s and interface: %s', host_fqdn, interface['label'])
         recordset_type = 'AAAA' if interface['version'] == 6 else 'A'
-        try:
-            recordset = self.central_api.create_recordset(context,
-                                                          zone['id'],
-                                                          RecordSet(name=host_fqdn, type=recordset_type))
-        except exceptions.DuplicateRecordSet:
-            LOG.warn('The record: %s was already registered', host_fqdn)
-        else:
-            record_values = dict(managed, data=interface['address'])
-            LOG.info('Creating record in %s / %s with values %r', zone['id'], recordset['id'], record_values)
-            self.central_api.create_record(context,
-                                           zone['id'],
-                                           recordset['id'],
-                                           Record(**record_values))
+        # try:
+        record = Record(**dict(managed, data=interface['address']))
+        self._create_or_update_recordset(context, [record], zone.id,
+                                         host_fqdn, recordset_type)
+            # recordset = self.central_api.create_recordset(context,
+                                                          # zone['id'],
+                                                          # RecordSet(name=host_fqdn, type=recordset_type))
+        # except exceptions.DuplicateRecordSet:
+            # LOG.warn('The record: %s was already registered', host_fqdn)
+        # else:
+            # record_values = dict(managed, data=interface['address'])
+            # LOG.info('Creating record in %s / %s with values %r', zone['id'], recordset['id'], record_values)
+            # self.central_api.create_record(context,
+                                           # zone['id'],
+                                           # recordset['id'],
+                                           # Record(**record_values))
 
     def _create_reverse_record(self, context, managed, host_fqdn, interface):
         LOG.info('Create reverse record for interface: %s and address: %s', interface['label'], interface['address'])
