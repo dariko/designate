@@ -180,7 +180,6 @@ class NovaFixedHandler(BaseEnhancedHandler):
             'managed_resource_type': 'instance',
             'managed_resource_id': payload['instance_id']
         }
-        LOG.error('event managed %s', managed)
         if event_type == 'compute.instance.create.end':
             self._create_records(context, managed, payload)
         elif event_type == 'compute.instance.delete.start':

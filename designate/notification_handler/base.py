@@ -38,8 +38,6 @@ class NotificationHandler(ExtensionPlugin):
     __plugin_type__ = 'handler'
 
     def __init__(self, *args, **kw):
-        LOG.error('AAAA %s', dir(cfg.CONF))
-        LOG.error('AAAA %s', cfg.CONF)
         super(NotificationHandler, self).__init__(*args, **kw)
         self.central_api = central_rpcapi.CentralAPI()
 
