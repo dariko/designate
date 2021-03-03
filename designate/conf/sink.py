@@ -95,7 +95,8 @@ SINK_NOVA_CUSTOM_OPTS = [
     cfg.StrOpt('control_exchange', default='nova',
                help='control-exchange for nova notification'),
     cfg.ListOpt('exclude_zones', default=[]),
-]
+] 
+
 
 def register_opts(conf):
     conf.register_group(SINK_GROUP)
