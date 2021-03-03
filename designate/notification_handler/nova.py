@@ -91,6 +91,8 @@ class BaseEnhancedHandler(NotificationHandler):
             )
         except exceptions.DuplicateRecordSet:
             # Fetch and update the existing recordset.
+            LOG.info('recordset %s  already exists in zone, replacing '
+                     'it contents', name, zone_id)
             recordset = self.central_api.find_recordset(context, {
                 'zone_id': zone_id,
                 'name': name,
