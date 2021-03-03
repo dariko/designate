@@ -105,7 +105,7 @@ class BaseEnhancedHandler(NotificationHandler):
                 LOG.warn('The reverse record: %s was already registered, '
                          'deleting it', host_reverse_fqdn)
                 old_reverse = self.central_api.find_recordset(
-                    admin_context, {'type': 'PTR', 'name': host_reverse_fqdn}
+                    admin_context, {'type': 'PTR', 'name': host_reverse_fqdn})
                 self.central_api.delete_recordset(
                     admin_context, reverse_zone.id, old_reverse.id)
             record_values = dict(managed, data=host_fqdn)
