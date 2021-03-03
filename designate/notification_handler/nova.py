@@ -136,10 +136,10 @@ class BaseEnhancedHandler(NotificationHandler):
                 self._create_reverse_record(context, managed, "%s." % hostname,
                                     ipv6_interfaces[0])
 
-    def _delete_records(self, all_tenants_context, managed):
+    def _delete_records(self, all_tenants_context, managed, payload):
         managed_records = self.central_api.find_records(all_tenants_context, managed)
         ptr_records = self.central_api.find_records(all_tenants_context, 
-            {'data', '%s.' % fqdn})
+            {'data', '%s.' % payload['hostname']})
         LOG.error('ptr_records: %s' % [x.name for x in ptr_records])
         records = managed_records
         if len(records) == 0:
