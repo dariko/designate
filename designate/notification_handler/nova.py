@@ -99,6 +99,7 @@ class BaseEnhancedHandler(NotificationHandler):
             # for record in records:
                 # recordset.records.append(record)
             LOG.error('aaaa %s', dir(recordset.records))
+            LOG.error('aaaa %s', recordset.records.__class__)
             recordset.records = records
             recordset = self.central_api.update_recordset(
                 context, recordset
