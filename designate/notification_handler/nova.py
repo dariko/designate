@@ -72,6 +72,40 @@ class BaseEnhancedHandler(NotificationHandler):
     def _get_host_fqdn(self, zone, hostname, interface):
         return "%s." % hostname
 
+    def _create_or_update_recordset(self, context, records, zone_id, name,
+                                    type, ttl=None):
+        name = name.encode('idna').decode('utf-8')
+
+        try:
+            # Attempt to create a new recordset.
+            values = {
+                'name': name,
+                'type': type,
+                'ttl': ttl,
+            }
+            recordset = RecordSet(**values)
+            recordset.records = RecordList(objects=records)
+            recordset = self.central_api.create_recordset(
+                context, zone_id, recordset
+            )
+        except exceptions.DuplicateRecordSet:
+            # Fetch and update the existing recordset.
+            recordset = self.central_api.find_recordset(context, {
+                'zone_id': zone_id,
+                'name': name,
+                'type': type,
+            })
+            # for record in records:
+                # recordset.records.append(record)
+            LOG.error('aaaa %s', dir(recordset.records))
+            recordset.records = records
+            recordset = self.central_api.update_recordset(
+                context, recordset
+            )
+        LOG.debug('Creating record in %s / %s', zone_id, recordset['id'])
+        return recordset
+
+
     def _create_record(self, context, managed, zone, host_fqdn, interface):
         LOG.info('Create record for host: %s and interface: %s', host_fqdn, interface['label'])
         recordset_type = 'AAAA' if interface['version'] == 6 else 'A'
