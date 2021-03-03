@@ -138,16 +138,17 @@ class BaseEnhancedHandler(NotificationHandler):
                                     ipv6_interfaces[0])
 
     def _delete_records(self, context, managed):
-        records = self.central_api.find_records(context, managed)
-        LOG.debug(self.central_api.find_records(context, managed))
-        LOG.debug([repr(x) for x in self.central_api.find_records(context)])
+        all_tenants_context = self._get_context()
+        records = self.central_api.find_records(all_tenants_context, managed)
+        LOG.debug(self.central_api.find_records(all_tenants_context, managed))
+        LOG.debug([repr(x) for x in self.central_api.find_records(all_tenants_context)])
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
             for record in records:
                 LOG.info('Deleting record %s', record['id'])
                 try:
-                    self.central_api.delete_record(context,
+                    self.central_api.delete_record(all_tenants_context,
                                                    record['zone_id'],
                                                    record['recordset_id'],
                                                    record['id'])
