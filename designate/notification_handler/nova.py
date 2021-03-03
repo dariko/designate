@@ -140,7 +140,7 @@ class BaseEnhancedHandler(NotificationHandler):
     def _delete_records(self, context, managed):
         records = self.central_api.find_records(context, managed)
         LOG.debug(self.central_api.find_records(context, managed))
-        LOG.debug(self.central_api.find_records(context))
+        LOG.debug([x for x in self.central_api.find_records(context)])
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
