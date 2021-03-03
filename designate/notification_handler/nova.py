@@ -182,8 +182,7 @@ class BaseEnhancedHandler(NotificationHandler):
 
     def _delete_records(self, all_tenants_context, managed, payload):
         records = list(self.central_api.find_records(all_tenants_context, managed))
-        for ptr_record in self.central_api.find_records(all_tenants_context, 
-                {'data': '%s.' % payload['hostname']})
+        for ptr_record in self.central_api.find_records(all_tenants_context, {'data': '%s.' % payload['hostname']}):
             if not ptr_record.id in [x.id for x in records]:
                 records.append(ptr_record)
         if len(records) == 0:
