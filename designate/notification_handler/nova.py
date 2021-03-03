@@ -180,6 +180,7 @@ class BaseEnhancedHandler(NotificationHandler):
                                     ipv6_interfaces[0])
 
     def _delete_records(self, all_tenants_context, managed, payload):
+        return
         managed_records = self.central_api.find_records(all_tenants_context, managed)
         ptr_records = self.central_api.find_records(all_tenants_context, 
             {'data': '%s.' % payload['hostname']})
