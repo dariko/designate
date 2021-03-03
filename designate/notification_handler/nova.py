@@ -137,11 +137,8 @@ class BaseEnhancedHandler(NotificationHandler):
                 self._create_reverse_record(context, managed, "%s." % hostname,
                                     ipv6_interfaces[0])
 
-    def _delete_records(self, context, managed):
-        all_tenants_context = self._get_context()
+    def _delete_records(self, all_tenants_context, managed):
         records = self.central_api.find_records(all_tenants_context, managed)
-        LOG.debug(self.central_api.find_records(all_tenants_context, managed))
-        LOG.debug([repr(x) for x in self.central_api.find_records(all_tenants_context)])
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
@@ -171,7 +168,6 @@ class NovaFixedHandler(BaseEnhancedHandler):
     def process_notification(self, ctx, event_type, payload):
         LOG.info('NovaCustomHandler notification: %s. %s', event_type, payload)
         tenant_id = payload['tenant_id']
-        context = self._get_context(tenant_id)
 
         managed = {
             'managed': True,
@@ -181,6 +177,6 @@ class NovaFixedHandler(BaseEnhancedHandler):
             'managed_resource_id': payload['instance_id']
         }
         if event_type == 'compute.instance.create.end':
-            self._create_records(context, managed, payload)
+            self._create_records(self._get_context(tenant_id), managed, payload)
         elif event_type == 'compute.instance.delete.start':
-            self._delete_records(context, managed)
+            self._delete_records(self._get_context(), managed)
