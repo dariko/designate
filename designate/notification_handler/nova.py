@@ -144,7 +144,7 @@ class BaseEnhancedHandler(NotificationHandler):
         managed_records = self.central_api.find_records(all_tenants_context, managed)
         ptr_records = self.central_api.find_records(all_tenants_context, 
             {'data': '%s.' % payload['hostname']})
-        LOG.error('ptr_records: %s' % [x.name for x in ptr_records])
+        LOG.error('ptr_records: %s' % [x.data for x in ptr_records])
         records = managed_records
         if len(records) == 0:
             LOG.info('No record found to be deleted')
