@@ -66,7 +66,7 @@ class NotificationHandler(ExtensionPlugin):
         return self.central_api.get_zone(context, zone_id)
 
     def _create_or_update_recordset(self, context, records, zone_id, name,
-                                    type, ttl=None):
+                                    type, ttl=None, replace=True):
         name = name.encode('idna').decode('utf-8')
 
         try:
@@ -88,9 +88,11 @@ class NotificationHandler(ExtensionPlugin):
                 'name': name,
                 'type': type,
             })
-            # for record in records:
-                # recordset.records.append(record)
+            if replace:
+                recordset.records = RecordList.from_list([])
             recordset.records = records
+            for record in records:
+                recordset.records.append(record)
             recordset = self.central_api.update_recordset(
                 context, recordset
             )
