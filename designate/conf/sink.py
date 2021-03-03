@@ -35,11 +35,6 @@ SINK_NOVA_GROUP = cfg.OptGroup(
     title="Configuration for Nova Notification Handler"
 )
 
-SINK_NOVA_CUSTOM_GROUP = cfg.OptGroup(
-    name='handler:nova_custom',
-    title="Configuration for Nova Notification Handler"
-)
-
 SINK_OPTS = [
     cfg.IntOpt('workers',
                help='Number of sink worker processes to spawn'),
@@ -89,13 +84,6 @@ SINK_NOVA_OPTS = [
     cfg.MultiStrOpt('formatv6', help='IPv6 format'),
 ]
 
-SINK_NOVA_CUSTOM_OPTS = [
-    cfg.ListOpt('notification_topics', default=['notifications'],
-                help='notification any events from nova'),
-    cfg.StrOpt('control_exchange', default='nova',
-               help='control-exchange for nova notification'),
-    cfg.ListOpt('exclude_zones', default=[]),
-]
 
 def register_opts(conf):
     conf.register_group(SINK_GROUP)
@@ -106,7 +94,6 @@ def register_opts(conf):
     conf.register_opts(SINK_NEUTRON_OPTS, group=SINK_NEUTRON_GROUP)
     conf.register_group(SINK_NOVA_GROUP)
     conf.register_opts(SINK_NOVA_OPTS, group=SINK_NOVA_GROUP)
-    conf.register_opts(SINK_NOVA_CUSTOM_OPTS, group=SINK_NOVA_CUSTOM_GROUP)
 
 
 def list_opts():
