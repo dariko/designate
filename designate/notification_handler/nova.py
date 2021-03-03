@@ -22,6 +22,7 @@ from designate import exceptions
 from designate.notification_handler.base import NotificationHandler
 from designate.objects import Record
 from designate.objects import RecordSet
+from designate.objects import RecordList
 
 LOG = logging.getLogger(__name__)
 
