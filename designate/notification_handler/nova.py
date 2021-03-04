@@ -79,10 +79,14 @@ class BaseEnhancedHandler(NotificationHandler):
                                     type, ttl=None):
 
         name = name.encode('idna').decode('utf-8')
-        if self.central_api.find_recordset(context, {'zone_id': zone_id, 'name': name}):
-            LOG.warn('Found already existing recordset with name %s, '
-                     'deleting it.', name)
-            self.central_api.delete_recordset(context, zone_id, {'name': name})
+        found_recordset = self.central_api.find_recordset(
+            context, {'zone_id': zone_id, 'name': name}):
+        if found_recordset:
+            LOG.warn('Found already existing recordset %s with name %s, '
+                     'deleting it.', found_recordset.id,
+                     found_recordset.name)
+            self.central_api.delete_recordset(
+                context, zone_id, found_recordset.id)
         recordset = RecordSet(name=name, type=type, ttl=ttl)
         recordset.records = RecordList(objects=records)
         recordset = self.central_api.create_recordset(
