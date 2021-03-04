@@ -47,7 +47,7 @@ class BaseEnhancedHandler(NotificationHandler):
                        and (not x.name in cfg.CONF[self.name].zone_id.split(','))]
         if not valid_zones:
             raise exceptions.ZoneNotFound()
-        return sorted(valid_zones, key=lambda x: x.name, reverse=True)[0]
+        return sorted(valid_zones, key=lambda x: len(x.name), reverse=True)[0]
 
     def _get_reverse_fqdn(self, address, version):
         if version == 6:
@@ -60,8 +60,6 @@ class BaseEnhancedHandler(NotificationHandler):
             return '.'.join(address.split('.')[::-1]) + '.in-addr.arpa.'
 
     def _get_reverse_zone(self, context, host_reverse_fqdn=None):
-        # TODO: Test if we could get reverse_domains directly with:
-        # reverse_domains = self.central_api.find_domains(context, {'name': '*.arpa.'})
         zones = self.central_api.find_zones(context)
         reverse_zones = filter(lambda x: x.name.endswith('.arpa.'), zones)
         if host_reverse_fqdn:
@@ -69,7 +67,7 @@ class BaseEnhancedHandler(NotificationHandler):
                 lambda x: host_reverse_fqdn.endswith(x.name), reverse_zones))
         if len(reverse_zones) == 0:
             return None
-        return sorted(reverse_zones, key=lambda x: x.name, reverse=True)[0]
+        return sorted(reverse_zones, key=lambda x: len(x.name), reverse=True)[0]
 
     def _get_host_fqdn(self, zone, hostname, interface):
         return "%s." % hostname
@@ -134,8 +132,6 @@ class BaseEnhancedHandler(NotificationHandler):
         except Exception as e:
             LOG.error('Error getting the zone for tenant: %s. %s', context.tenant, e)
         else:
-            LOG.info('Creating records for host: %s in tenant: %s using zone: %s',
-                     hostname, context.tenant, zone['name'])
             ipv4_interfaces = [x for x in payload['fixed_ips'] if x['version'] == 4]
             ipv6_interfaces = [x for x in payload['fixed_ips'] if x['version'] == 6]
             if ipv4_interfaces:
