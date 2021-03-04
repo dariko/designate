@@ -62,8 +62,8 @@ class BaseEnhancedHandler(NotificationHandler):
     def _get_reverse_zone(self, context, host_reverse_fqdn=None):
         # TODO: Test if we could get reverse_domains directly with:
         # reverse_domains = self.central_api.find_domains(context, {'name': '*.arpa.'})
-        reverse_zones = self.central_api.find_zones(context , {'name': '*.arpa.'})
-        # reverse_zones = filter(lambda x: x.name.endswith('.arpa.'), zones)
+        zones = self.central_api.find_zones(context)
+        reverse_zones = filter(lambda x: x.name.endswith('.arpa.'), zones)
         if host_reverse_fqdn:
             reverse_zones = list(filter(
                 lambda x: host_reverse_fqdn.endswith(x.name), reverse_zones))
