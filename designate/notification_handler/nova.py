@@ -112,7 +112,7 @@ class BaseEnhancedHandler(NotificationHandler):
 
 
     def _create_record(self, context, managed, zone, host_fqdn, interface):
-        LOG.info('Create record for host: %s and ip_version: %s', host_fqdn,
+        LOG.debug('Create record for host: %s and ip_version: %s', host_fqdn,
                  interface['version'])
         recordset_type = 'AAAA' if interface['version'] == 6 else 'A'
         record = Record(**dict(managed, data=interface['address']))
@@ -120,7 +120,7 @@ class BaseEnhancedHandler(NotificationHandler):
                                          host_fqdn, recordset_type)
 
     def _create_reverse_record(self, context, managed, host_fqdn, interface):
-        LOG.debug('Create reverse record for host %s ans address: %s',
+        LOG.debug('Create reverse record for host %s and address: %s',
                   host_fqdn, interface['address'])
         host_reverse_fqdn = self._get_reverse_fqdn(interface['address'],
                                                    interface['version'])
@@ -208,4 +208,5 @@ class NovaFixedHandler(BaseEnhancedHandler):
         if event_type == 'compute.instance.create.end':
             self._create_records(self._get_context(tenant_id), managed, payload)
         elif event_type == 'compute.instance.delete.start':
+            return
             self._delete_records(self._get_context(), managed, payload)
