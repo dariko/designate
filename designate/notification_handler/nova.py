@@ -100,7 +100,7 @@ class BaseEnhancedHandler(NotificationHandler):
                 'name': name,
                 'type': type,
             })
-            if replace_recordsets:
+            if replace_records:
                 recordset.records = RecordList.from_list([])
             for record in records:
                 recordset.records.append(record)
