@@ -66,7 +66,8 @@ class BaseEnhancedHandler(NotificationHandler):
         zones = self.central_api.find_zones(context)
         reverse_zones = filter(lambda x: x.name.endswith('.arpa.'), zones)
         if host_reverse_fqdn:
-            reverse_zones = filter(lambda x: host_reverse_fqdn.endswith(x.name), reverse_zones)
+            reverse_zones = list(filter(
+                lambda x: host_reverse_fqdn.endswith(x.name), reverse_zones))
         if len(reverse_zones) == 0:
             return None
         return sorted(reverse_zones, key=lambda x: x.name, reverse=True)[0]
@@ -194,7 +195,7 @@ class NovaFixedHandler(BaseEnhancedHandler):
         ]
 
     def process_notification(self, ctx, event_type, payload):
-        LOG.info('NovaCustomHandler notification: %s. %s', event_type, payload)
+        LOG.debug('NovaCustomHandler notification: %s. %s', event_type, payload)
         tenant_id = payload['tenant_id']
 
         managed = {
