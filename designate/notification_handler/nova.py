@@ -75,39 +75,36 @@ class BaseEnhancedHandler(NotificationHandler):
     def _get_host_fqdn(self, zone, hostname, interface):
         return "%s." % hostname
 
-    def _create_or_update_recordset(self, context, records, zone_id, name,
-                                    type, ttl=None, replace_records=True):
+    def _create_or_replace_recordset(self, context, records, zone_id, name,
+                                    type, ttl=None):
+
         name = name.encode('idna').decode('utf-8')
+        recordset = RecordSet(name=name, type=type, ttl=ttl)
 
         try:
             # Attempt to create a new recordset.
-            values = {
-                'name': name,
-                'type': type,
-                'ttl': ttl,
-            }
-            recordset = RecordSet(**values)
+            # values = {
+                # 'name': name,
+                # 'type': type,
+                # 'ttl': ttl,
+            # }
             recordset.records = RecordList(objects=records)
             recordset = self.central_api.create_recordset(
                 context, zone_id, recordset
             )
         except exceptions.DuplicateRecordSet:
-            # Fetch and update the existing recordset.
-            LOG.info('recordset %s  already exists in zone, replacing '
-                     'it contents', name, zone_id)
-            recordset = self.central_api.find_recordset(context, {
-                'zone_id': zone_id,
-                'name': name,
-                'type': type,
-            })
-            if replace_records:
-                recordset.records = RecordList.from_list([])
+            LOG.info('Recordset %s already exists, ',
+                     'deleting and rebuilding it', name)
+            recordset = self.central_api.delete_recordset(
+                context, zone_id, recordset.id)
+            recordset = self.central_api.create_recordset(
+                context, zone_id, recordset)
             for record in records:
                 recordset.records.append(record)
             recordset = self.central_api.update_recordset(
                 context, recordset
             )
-        LOG.debug('Creating record in %s / %s', zone_id, recordset['id'])
+        LOG.debug('Created recordset %s in zone %s', recordset['id'], zone_id)
         return recordset
 
 
