@@ -86,7 +86,8 @@ class BaseEnhancedHandler(NotificationHandler):
                      'deleting it.', found_recordset[0].id,
                      found_recordset[0].name)
             self.central_api.delete_recordset(
-                context, zone_id, found_recordset[0].id)
+                context, zone_id, found_recordset[0].id,
+                increment_serial=False)
         recordset = RecordSet(name=name, type=type, ttl=ttl)
         recordset.records = RecordList(objects=records)
         recordset = self.central_api.create_recordset(
