@@ -80,30 +80,16 @@ class BaseEnhancedHandler(NotificationHandler):
 
         name = name.encode('idna').decode('utf-8')
         recordset = RecordSet(name=name, type=type, ttl=ttl)
-
-        try:
-            # Attempt to create a new recordset.
-            # values = {
-                # 'name': name,
-                # 'type': type,
-                # 'ttl': ttl,
-            # }
-            recordset.records = RecordList(objects=records)
-            recordset = self.central_api.create_recordset(
-                context, zone_id, recordset
-            )
-        except exceptions.DuplicateRecordSet:
-            LOG.info('Recordset %s already exists, ',
-                     'deleting and rebuilding it', name)
-            recordset = self.central_api.delete_recordset(
-                context, zone_id, recordset.id)
-            recordset = self.central_api.create_recordset(
-                context, zone_id, recordset)
-            for record in records:
-                recordset.records.append(record)
-            recordset = self.central_api.update_recordset(
-                context, recordset
-            )
+        if self.central_api.find_recordset(context, zone_id, {'name': name}):
+            LOG.warn('Found already existing recordset with name %s, '
+                     'deleting it.', name)
+            self.central_api.delete_recordset(context, zone_id, {'name': name})
+        recordset.records = RecordList(objects=records)
+        recordset = self.central_api.create_recordset(
+            context, zone_id, recordset
+        )
+        for record in records:
+            recordset.records.append(record)
         LOG.debug('Created recordset %s in zone %s', recordset['id'], zone_id)
         return recordset
 
