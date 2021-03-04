@@ -113,8 +113,8 @@ class BaseEnhancedHandler(NotificationHandler):
                  interface['version'])
         recordset_type = 'AAAA' if interface['version'] == 6 else 'A'
         record = Record(**dict(managed, data=interface['address']))
-        self._create_or_update_recordset(context, [record], zone.id,
-                                         host_fqdn, recordset_type)
+        self._create_or_replace_recordset(context, [record], zone.id,
+                                          host_fqdn, recordset_type)
 
     def _create_reverse_record(self, context, managed, host_fqdn, interface):
         LOG.debug('Create reverse record for host %s and address: %s',
@@ -130,9 +130,9 @@ class BaseEnhancedHandler(NotificationHandler):
         
         admin_context = DesignateContext.get_admin_context(all_tenants=True)
         record = Record(**dict(managed, data=host_fqdn))
-        self._create_or_update_recordset(admin_context, [record],
-                                         reverse_zone.id,
-                                         host_reverse_fqdn, 'PTR')
+        self._create_or_replace_recordset(admin_context, [record],
+                                          reverse_zone.id,
+                                          host_reverse_fqdn, 'PTR')
 
     def _create_records(self, context, managed, payload):
         try:
