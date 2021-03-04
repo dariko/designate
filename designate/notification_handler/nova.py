@@ -208,5 +208,4 @@ class NovaFixedHandler(BaseEnhancedHandler):
         if event_type == 'compute.instance.create.end':
             self._create_records(self._get_context(tenant_id), managed, payload)
         elif event_type == 'compute.instance.delete.start':
-            return
             self._delete_records(self._get_context(), managed, payload)
