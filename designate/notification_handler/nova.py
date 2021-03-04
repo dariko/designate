@@ -59,8 +59,7 @@ class BaseEnhancedHandler(NotificationHandler):
         else:
             return '.'.join(address.split('.')[::-1]) + '.in-addr.arpa.'
 
-    def _get_reverse_zone(self, host_reverse_fqdn=None):
-        context = self._get_context()
+    def _get_reverse_zone(self, context, host_reverse_fqdn=None):
         # TODO: Test if we could get reverse_domains directly with:
         # reverse_domains = self.central_api.find_domains(context, {'name': '*.arpa.'})
         zones = self.central_api.find_zones(context)
@@ -113,13 +112,14 @@ class BaseEnhancedHandler(NotificationHandler):
         host_reverse_fqdn = self._get_reverse_fqdn(interface['address'],
                                                    interface['version'])
 
-        reverse_zone = self._get_reverse_zone(host_reverse_fqdn)
+        all_tenants_context = self._get_context()
+        reverse_zone = self._get_reverse_zone(all_tenants_context, 
+                                              host_reverse_fqdn)
         if not reverse_zone:
             LOG.info('No reverse zone found for host %s and address %s',
                      host_fqdn, interface['address'])
             return
-        
-        all_tenants_context = self._get_context()
+
         record = Record(**dict(managed, data=host_fqdn))
         self._create_or_replace_recordset(all_tenants_context, [record],
                                           reverse_zone.id,
