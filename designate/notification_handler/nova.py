@@ -118,9 +118,9 @@ class BaseEnhancedHandler(NotificationHandler):
                      host_fqdn, interface['address'])
             return
         
-        admin_context = DesignateContext.get_admin_context(all_tenants=True)
+        all_tenants_context = self._get_context()
         record = Record(**dict(managed, data=host_fqdn))
-        self._create_or_replace_recordset(admin_context, [record],
+        self._create_or_replace_recordset(all_tenants_context, [record],
                                           reverse_zone.id,
                                           host_reverse_fqdn, 'PTR')
 
