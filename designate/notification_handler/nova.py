@@ -160,7 +160,7 @@ class BaseEnhancedHandler(NotificationHandler):
                 self._create_reverse_record(context, managed, "%s." % hostname,
                                     ipv6_interfaces[0])
 
-    def _delete_records(self, all_tenants_context, managed, payload,
+    def _delete_records(self, all_tenants_context, managed, payload)
         records = self.central_api.find_records(all_tenants_context,
                                                 managed)
         LOG.info('Deleting records for instance %s(%s)', len(records),
