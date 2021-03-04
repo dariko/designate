@@ -121,7 +121,8 @@ class BaseEnhancedHandler(NotificationHandler):
     def _create_reverse_record(self, context, managed, host_fqdn, interface):
         LOG.debug('Create reverse record for host %s ans address: %s',
                   host_fqdn, interface['address'])
-        host_reverse_fqdn = self._get_reverse_fqdn(interface['address'], interface['version'])
+        host_reverse_fqdn = self._get_reverse_fqdn(interface['address'],
+                                                   interface['version'])
 
         reverse_zone = self._get_reverse_zone(host_reverse_fqdn)
         if not reverse_zone:
@@ -134,24 +135,6 @@ class BaseEnhancedHandler(NotificationHandler):
         self._create_or_update_recordset(admin_context, [record],
                                          reverse_zone.id,
                                          host_reverse_fqdn, 'PTR')
-        # try:
-            # recordset = self.central_api.create_recordset(admin_context,
-                                                          # reverse_zone.id,
-                                                          # RecordSet(name=host_reverse_fqdn, type='PTR'))
-        # except exceptions.DuplicateRecordSet:
-            # LOG.warn('The reverse record: %s was already registered, '
-                     # 'deleting it', host_reverse_fqdn)
-            # old_reverse = self.central_api.find_recordset(
-                # admin_context, {'type': 'PTR', 'name': host_reverse_fqdn})
-            # self.central_api.delete_recordset(
-                # admin_context, reverse_zone.id, old_reverse.id)
-        # record_values = dict(managed, data=host_fqdn)
-        # LOG.debug('Creating reverse record in %s / %s with values %r',
-                  # reverse_zone.id, recordset['id'], record_values)
-        # self.central_api.create_record(admin_context,
-                                       # reverse_zone.id,
-                                       # recordset['id'],
-                                       # Record(**record_values))
 
     def _create_records(self, context, managed, payload):
         try:
@@ -177,16 +160,18 @@ class BaseEnhancedHandler(NotificationHandler):
                 self._create_reverse_record(context, managed, "%s." % hostname,
                                     ipv6_interfaces[0])
 
-    def _delete_records(self, all_tenants_context, managed, payload):
-        records = list(self.central_api.find_records(all_tenants_context, managed))
-        for ptr_record in self.central_api.find_records(all_tenants_context, {'data': '%s.' % payload['hostname']}):
-            if not ptr_record.id in [x.id for x in records]:
-                records.append(ptr_record)
+    def _delete_records(self, all_tenants_context, managed, payload,
+        records = self.central_api.find_records(all_tenants_context,
+                                                managed)
+        LOG.info('Deleting records for instance %s(%s)', len(records),
+                 payload['instance_id'], payload['hostname'])
         if len(records) == 0:
             LOG.info('No record found to be deleted')
         else:
+            LOG.info('Deleting %s records', len(records))
             for record in records:
-                LOG.info('Deleting record %s', record['id'])
+                LOG.debug('Deleting record %s(data: %s)',
+                          record['id'], record['data'])
                 try:
                     self.central_api.delete_record(all_tenants_context,
                                                    record['zone_id'],
