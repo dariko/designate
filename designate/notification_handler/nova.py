@@ -80,7 +80,7 @@ class BaseEnhancedHandler(NotificationHandler):
 
         name = name.encode('idna').decode('utf-8')
         found_recordset = self.central_api.find_recordset(
-            context, {'zone_id': zone_id, 'name': name}):
+            context, {'zone_id': zone_id, 'name': name})
         if found_recordset:
             LOG.warn('Found already existing recordset %s with name %s, '
                      'deleting it.', found_recordset.id,
