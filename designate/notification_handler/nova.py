@@ -148,12 +148,12 @@ class BaseEnhancedHandler(NotificationHandler):
     def _delete_records(self, all_tenants_context, managed, payload):
         records = self.central_api.find_records(all_tenants_context,
                                                 managed)
-        LOG.info('Deleting records for instance %s(%s)', len(records),
+        LOG.debug('Deleting records for instance %s(%s)', len(records),
                  payload['instance_id'], payload['hostname'])
         if len(records) == 0:
-            LOG.info('No record found to be deleted')
+            LOG.debug('No record found to be deleted')
         else:
-            LOG.info('Deleting %s records', len(records))
+            LOG.debug('Deleting %s records', len(records))
             for record in records:
                 LOG.debug('Deleting record %s(data: %s)',
                           record['id'], record['data'])
