@@ -61,7 +61,7 @@ class BaseEnhancedHandler(NotificationHandler):
 
     def _get_reverse_zone(self, context, host_reverse_fqdn=None):
         zones = self.central_api.find_zones(context)
-        reverse_zones = filter(lambda x: x.name.endswith('.arpa.'), zones)
+        reverse_zones = [x for x in zones if x.name.endswith('.arpa.')]
         if host_reverse_fqdn:
             reverse_zones = list(filter(
                 lambda x: host_reverse_fqdn.endswith(x.name), reverse_zones))
