@@ -103,6 +103,8 @@ class BaseEnhancedHandler(NotificationHandler):
         record = Record(**dict(managed, data=interface['address']))
         self._create_or_replace_recordset(context, [record], zone.id,
                                           host_fqdn, recordset_type)
+        LOG.info('Created record %s with data %s'
+                 % (host_fqdn, record['data']))
 
     def _create_reverse_record(self, context, managed, host_fqdn, interface):
         LOG.debug('Create reverse record for host %s and address: %s',
@@ -122,6 +124,8 @@ class BaseEnhancedHandler(NotificationHandler):
         self._create_or_replace_recordset(all_tenants_context, [record],
                                           reverse_zone.id,
                                           host_reverse_fqdn, 'PTR')
+        LOG.info('Created PTR record %s for host %s'
+                 % (host_reverse_fqdn, host_fqdn))
 
     def _create_records(self, context, managed, payload):
         try:
@@ -150,10 +154,11 @@ class BaseEnhancedHandler(NotificationHandler):
                                                 managed)
         LOG.debug('Deleting records for instance %s(%s)', len(records),
                  payload['instance_id'], payload['hostname'])
+        LOG.info('Deleting records for instance %s: %s'
+                 % (payload['instance_id'], [x['data'] for x in records]))
         if len(records) == 0:
             LOG.debug('No record found to be deleted')
         else:
-            LOG.debug('Deleting %s records', len(records))
             for record in records:
                 LOG.debug('Deleting record %s(data: %s)',
                           record['id'], record['data'])
